@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>関数型言語OCamlで作る代数計算機</title>
+<meta name="description" content="整数から有限体まで、代数構造をOCamlの型として実装し、四則演算と累乗根だけで方程式・微分方程式・積分を扱う計算機をつくる技術書。サークル「あるじぇぶら」頒布。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="#top" class="site-title">関数型言語OCamlで作る代数計算機</a>
+    <button class="nav-toggle" id="navToggle" aria-label="メニューを開く" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="site-nav" id="siteNav">
+      <a href="#overview">概要</a>
+      <a href="#toc">目次</a>
+      <a href="#read">本文を読む</a>
+      <a href="#audience">対象読者</a>
+      <a href="#distribution">頒布情報</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero container">
+    <div class="hero-cover">
+      <img src="../hyousi.png" alt="書影: 関数型言語OCamlで作る代数計算機" width="1600" height="1116">
+    </div>
+    <div class="hero-info">
+      <h1>関数型言語OCaml<br>で作る代数計算機</h1>
+      <p class="hero-subtitle">代数構造の構築から、方程式の厳密解法・微分積分まで</p>
+      <dl class="hero-facts">
+        <div><dt>著者</dt><dd>icchon</dd></div>
+        <div><dt>サークル</dt><dd>あるじぇぶら</dd></div>
+        <div><dt>価格</dt><dd>500円（税込）</dd></div>
+        <div><dt>言語</dt><dd>日本語</dd></div>
+        <div><dt>頒布</dt><dd>技術書典21 / こみてっく</dd></div>
+      </dl>
+      <div class="hero-actions">
+        <a href="algebra.pdf" class="btn btn-primary" target="_blank" rel="noopener">PDFを読む（無料）</a>
+        <a href="#distribution" class="btn btn-outline">頒布情報を見る</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="overview" class="section">
+    <div class="container">
+      <h2>本書について</h2>
+      <p>本書は、四則演算と累乗根だけを使って方程式の厳密解を式として求める計算機を、OCamlの型とファンクタで実装する技術書です。応用先は方程式の求解にとどまらず、微分方程式・積分の実装にも取り組みます。</p>
+      <p>方程式を解く方法には、ニュートン法のような数値計算で近似値を求めるアプローチと、四則演算と累乗根だけを使って厳密な解を式として書き下す代数的なアプローチがあります。本書が扱うのは後者です。たとえば3次方程式の解を、近似値としてではなく、四則演算と累乗根だけを使った厳密な式として求めます。</p>
+      <p>実装にあたっては、「群」「環」「体」「拡大体」といった代数構造そのものをOCamlの型として構築し、四則演算をその型に対して正しく定義された演算として実装します。引き算を「足し算と逆元から自動的に導出する」ように、群・モノイド・環・体といった代数的な性質を、「ある性質を満たす代数を受け取ると、別の演算を自動生成する」ファンクタとして組み立てていきます。この部品を積み重ねることで、整数・有理数・複素数・ベクトル・多項式・有限体という一見バラバラに見える代数が、同じ部品の組み合わせでできていることを実装を通して確認します。</p>
+    </div>
+  </section>
+
+  <section id="audience" class="section section-alt">
+    <div class="container">
+      <h2>対象読者・前提知識</h2>
+      <ul class="checklist">
+        <li>高校程度の数学（方程式、複素数、ベクトルの基本）がある方</li>
+        <li>群・環・体といった抽象代数の知識は前提としません。本書内で必要になった順に定義します</li>
+        <li>OCamlや関数型プログラミングの経験は必須ではありません。<code>type</code>・<code>module</code>・<code>functor</code>などの構文は、専用の章でまとめて説明します</li>
+      </ul>
+      <p>コードの実行結果は、コンパイル・実行の手順とあわせて本文中にそのまま示します。そのため、手元でOCamlを実行しなくても最後まで読み進められます。実際にコードを試したい方向けに、環境構築の章でセットアップ方法も説明していますが、必須の準備ではありません。</p>
+    </div>
+  </section>
+
+  <section id="toc" class="section">
+    <div class="container">
+      <h2>目次</h2>
+      <p class="section-lead">本書は大きく2つの章「基礎的な代数をつくる」「代数を応用する」で構成されます。</p>
+
+      <div class="toc-list">
+
+        <article class="toc-chapter">
+          <h3>なぜOCamlで代数計算機をつくるのか</h3>
+          <p>数値的に解くか代数的に解くか／「代数的に解く」プログラムにも深さがある／型が代数になる、ということ／前提知識／本書の構成</p>
+        </article>
+
+        <article class="toc-chapter">
+          <h3>環境構築</h3>
+          <p>OCamlコンパイラのセットアップ（本文を読み進めるだけなら必須ではありません）</p>
+        </article>
+
+        <article class="toc-chapter">
+          <h3>本書で使うOCamlの構文</h3>
+          <p>値と関数の束縛、モジュールとファンクタなど、以降の章で繰り返し使う構文のまとめ</p>
+        </article>
+
+        <article class="toc-chapter toc-chapter-expandable">
+          <button class="toc-chapter-toggle" aria-expanded="false">
+            <h3>基礎的な代数をつくる</h3>
+            <span class="toc-toggle-icon" aria-hidden="true"></span>
+          </button>
+          <p>整数・有理数・複素数・ベクトル・多項式・有限体を、同じファンクタを使い回しながら1つずつ実装します。</p>
+          <ul class="toc-sections">
+            <li><strong>整数</strong> — 基本的な機能、最大公約数（ユークリッドの互除法・拡張ユークリッドの互除法）、累乗</li>
+            <li><strong>有理数</strong> — 基本的な機能、分数体ファンクタ、0で割ってみる（リーマン球面・輪）</li>
+            <li><strong>複素数</strong> — 基本的な機能、四元数・八元数・十六元数への拡張（ケーリー・ディクソン構成）</li>
+            <li><strong>ベクトル</strong> — ベクトル空間ファンクタ、数ベクトル空間、行列・正方行列</li>
+            <li><strong>多項式</strong> — 多項式環の実装</li>
+            <li><strong>有限体</strong> — 位数pの有限体、多項式による有限体の構成、K/√2の構成、タワー拡大の限界</li>
+          </ul>
+        </article>
+
+        <article class="toc-chapter toc-chapter-expandable">
+          <button class="toc-chapter-toggle" aria-expanded="false">
+            <h3>代数を応用する</h3>
+            <span class="toc-toggle-icon" aria-hidden="true"></span>
+          </button>
+          <p>ここまでつくった部品を組み合わせて、1次方程式から3次方程式までを解きます。方程式に続けて、微分方程式・積分への応用も予定しています。</p>
+          <ul class="toc-sections">
+            <li><strong>多項式方程式</strong> — 数値的に解く・代数的に解くことの違い、「代数的に解く」の3段階、実際のCASの実装方法</li>
+            <li><strong>有理数解を探す</strong> — 有理数根定理による解の絞り込み</li>
+            <li><strong>拡大体K1の構成</strong> — 複数の平方根を同時に添加する拡大体</li>
+            <li><strong>K1(ω)の構成</strong> — 1の原始三乗根の添加</li>
+            <li><strong>三次方程式を解く</strong> — チルンハウス変換、カルダノの公式、還元不能な場合（Casus Irreducibilis）</li>
+            <li><strong>なぜ三次方程式までなのか</strong> — アーベル・ルフィニの定理と、静的な型でどこまで代数を表現できるかという実装上の限界</li>
+            <li><strong>微分方程式・積分（予定）</strong> — 方程式に続く応用範囲として執筆予定</li>
+          </ul>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="read" class="section section-alt">
+    <div class="container">
+      <h2>本文を読む</h2>
+      <p>方程式の求解までの内容を、PDFでそのまま無料公開しています。会場やオンラインでの頒布を待たずに読めます（微分方程式・積分の章は執筆中のため未収録です）。</p>
+      <div class="pdf-embed">
+        <iframe src="algebra.pdf" title="関数型言語OCamlで作る代数計算機 本文PDF"></iframe>
+      </div>
+      <p class="hero-actions">
+        <a href="algebra.pdf" class="btn btn-primary" target="_blank" rel="noopener">PDFを別タブで開く</a>
+      </p>
+    </div>
+  </section>
+
+  <section id="distribution" class="section">
+    <div class="container">
+      <h2>頒布情報</h2>
+      <dl class="info-grid">
+        <div><dt>サークル名</dt><dd>あるじぇぶら</dd></div>
+        <div><dt>著者</dt><dd>icchon</dd></div>
+        <div><dt>価格</dt><dd>500円（税込）</dd></div>
+        <div><dt>形式</dt><dd>紙の本 / PDF</dd></div>
+        <div><dt>ページ数</dt><dd>140ページ（仮）</dd></div>
+        <div><dt>言語</dt><dd>日本語</dd></div>
+      </dl>
+
+      <h3 class="distribution-subhead">技術書典21</h3>
+      <dl class="info-grid">
+        <div><dt>開催</dt><dd>日程未定（後日発表）</dd></div>
+        <div><dt>オンライン公開</dt><dd>2026年10月中旬ごろ予定（URLは後日公開）</dd></div>
+      </dl>
+
+      <h3 class="distribution-subhead">こみてっく</h3>
+      <dl class="info-grid">
+        <div><dt>概要</dt><dd>東京工業大学の学園祭で開催される同人誌即売会</dd></div>
+        <div><dt>開催</dt><dd>日程未定（後日発表）</dd></div>
+      </dl>
+
+      <p class="note">両イベントとも、詳細な日程・購入ページは決まり次第このページで更新します。</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>(C) 2026 icchon</p>
+  </div>
+</footer>
+
+<button id="backToTop" class="back-to-top" aria-label="ページの先頭に戻る">↑</button>
+
+<script src="script.js"></script>
+</body>
+</html>
