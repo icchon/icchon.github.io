@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>関数型言語OCamlで作る代数計算機</title>
-<meta name="description" content="整数から有限体まで、代数構造をOCamlの型として実装し、四則演算と累乗根だけで方程式・微分方程式・積分を扱う計算機をつくる技術書。サークル「あるじぇぶら」頒布。">
+<meta name="description" content="整数から拡大体まで、代数構造をOCamlのモジュールとファンクタで実装し、方程式の求解・微分・積分に応用する技術書。サークル「あるじぇぶら」頒布。">
 <style>
 :root {
   --color-bg: #faf8f5;
@@ -24,12 +24,14 @@
 }
 
 html {
+  overflow-x: hidden;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-height) + 12px);
 }
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN",
@@ -137,85 +139,103 @@ code {
 /* Hero */
 
 .hero {
+  position: relative;
   display: flex;
-  gap: 40px;
+  flex-direction: column;
   align-items: center;
-  padding: 48px 20px 56px;
+  gap: 32px;
+  padding: 56px 20px 64px;
+  text-align: center;
+  background: radial-gradient(ellipse 70% 55% at 50% 0%, rgba(200, 100, 31, 0.1), rgba(200, 100, 31, 0) 70%);
 }
 
 .hero-cover {
-  flex: 0 0 auto;
-  width: 46%;
-  max-width: 420px;
+  width: 54%;
+  max-width: 360px;
 }
 
 .hero-cover img {
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 4px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+  border-radius: 3px;
+  box-shadow:
+    0 2px 0 1px var(--color-surface),
+    0 2px 0 2px var(--color-border),
+    0 28px 48px rgba(35, 32, 28, 0.28);
 }
 
 .hero-info {
-  flex: 1 1 320px;
-  min-width: 260px;
+  width: 100%;
+  max-width: 560px;
 }
 
 .hero-info h1 {
   margin: 0 0 12px;
-  font-size: 1.9rem;
+  font-size: 2.1rem;
+  letter-spacing: 0.01em;
+  overflow-wrap: break-word;
 }
 
 .hero-subtitle {
   margin: 0 0 24px;
   color: var(--color-text-muted);
   font-size: 1.02rem;
+  overflow-wrap: break-word;
 }
 
 .hero-facts {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  gap: 10px 32px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
   margin: 0 0 28px;
 }
 
 .hero-facts div {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: baseline;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 7px 16px;
 }
 
 .hero-facts dt {
   color: var(--color-text-muted);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
 }
 
 .hero-facts dd {
   margin: 0;
   font-weight: 700;
+  font-size: 0.88rem;
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
 }
 
 .btn {
   display: inline-block;
-  padding: 12px 22px;
-  border-radius: 6px;
+  padding: 13px 28px;
+  border-radius: 999px;
   text-decoration: none;
   font-weight: 700;
   font-size: 0.95rem;
   border: 2px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .btn-primary {
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: #fff;
+  box-shadow: 0 10px 22px rgba(200, 100, 31, 0.3);
 }
 
 .btn-primary:hover {
@@ -401,15 +421,6 @@ code {
   font-size: 0.92rem;
 }
 
-.distribution-subhead {
-  margin: 28px 0 12px;
-  font-size: 1.05rem;
-}
-
-.distribution-subhead:first-of-type {
-  margin-top: 32px;
-}
-
 /* Footer */
 
 .site-footer {
@@ -478,19 +489,20 @@ code {
   }
 
   .hero {
-    flex-direction: column;
-    align-items: stretch;
     padding-top: 32px;
   }
 
   .hero-cover {
-    width: 70%;
-    max-width: 320px;
-    margin: 0 auto;
+    width: 62%;
+    max-width: 280px;
   }
 
-  .hero-facts {
-    grid-template-columns: 1fr;
+  .hero-title-break {
+    display: none;
+  }
+
+  .hero-info h1 {
+    font-size: 1.7rem;
   }
 
   .info-grid {
@@ -521,10 +533,10 @@ code {
 
   <section class="hero container">
     <div class="hero-cover">
-      <img src="hyousi.jpg" alt="書影: 関数型言語OCamlで作る代数計算機" width="1400" height="975">
+      <img src="hyousi-front.jpg" alt="書影: 関数型言語OCamlで作る代数計算機" width="682" height="975">
     </div>
     <div class="hero-info">
-      <h1>関数型言語OCaml<br>で作る代数計算機</h1>
+      <h1>関数型言語OCaml<br class="hero-title-break">で作る代数計算機</h1>
       <p class="hero-subtitle">代数構造の構築から、方程式の厳密解法・微分積分まで</p>
       <dl class="hero-facts">
         <div><dt>著者</dt><dd>icchon</dd></div>
@@ -543,9 +555,9 @@ code {
   <section id="overview" class="section">
     <div class="container">
       <h2>本書について</h2>
-      <p>本書は、四則演算と累乗根だけを使って方程式の厳密解を式として求める計算機を、OCamlの型とファンクタで実装する技術書です。応用先は方程式の求解にとどまらず、微分方程式・積分の実装にも取り組みます。</p>
-      <p>方程式を解く方法には、ニュートン法のような数値計算で近似値を求めるアプローチと、四則演算と累乗根だけを使って厳密な解を式として書き下す代数的なアプローチがあります。本書が扱うのは後者です。たとえば3次方程式の解を、近似値としてではなく、四則演算と累乗根だけを使った厳密な式として求めます。</p>
-      <p>実装にあたっては、「群」「環」「体」「拡大体」といった代数構造そのものをOCamlの型として構築し、四則演算をその型に対して正しく定義された演算として実装します。引き算を「足し算と逆元から自動的に導出する」ように、群・モノイド・環・体といった代数的な性質を、「ある性質を満たす代数を受け取ると、別の演算を自動生成する」ファンクタとして組み立てていきます。この部品を積み重ねることで、整数・有理数・複素数・ベクトル・多項式・有限体という一見バラバラに見える代数が、同じ部品の組み合わせでできていることを実装を通して確認します。</p>
+      <p>本書は、整数・有理数・複素数・多項式・ベクトルといった一見バラバラに見える代数構造を、OCamlのモジュールとファンクタを使って同じ枠組みの上に実装していく技術書です。実装した部品を使って、方程式の求解や微分・積分といった具体的な計算に応用するところまでを扱います。</p>
+      <p>実装では、「群」「環」「体」といった代数的な性質と、OCamlのモジュール・ファンクタによる実装を一対一に対応させます。引き算を「足し算と逆元から自動的に導出する」ように、群・モノイド・環・体といった代数的な性質を、「ある性質を満たす代数を受け取ると、別の演算を自動生成する」ファンクタとして組み立てていきます。</p>
+      <p>こうして積み重ねた部品を使うと、整数・有理数・複素数・ベクトル・多項式・拡大体が同じ部品の組み合わせでできていることが見えてきます。さらにこの部品を使って、2次方程式の解を近似値ではなく四則演算と累乗根だけの厳密な式として求めたり、微分・積分を扱ったりするところまでを本書で実装します。</p>
     </div>
   </section>
 
@@ -588,14 +600,14 @@ code {
             <h3>基礎的な代数をつくる</h3>
             <span class="toc-toggle-icon" aria-hidden="true"></span>
           </button>
-          <p>整数・有理数・複素数・ベクトル・多項式・有限体を、同じファンクタを使い回しながら1つずつ実装します。</p>
+          <p>整数・有理数・複素数・ベクトル・多項式・拡大体を、同じファンクタを使い回しながら1つずつ実装します。</p>
           <ul class="toc-sections">
             <li><strong>整数</strong> — 基本的な機能、最大公約数（ユークリッドの互除法・拡張ユークリッドの互除法）、累乗</li>
-            <li><strong>有理数</strong> — 基本的な機能、分数体ファンクタ、0で割ってみる（リーマン球面・輪）</li>
-            <li><strong>複素数</strong> — 基本的な機能、四元数・八元数・十六元数への拡張（ケーリー・ディクソン構成）</li>
-            <li><strong>ベクトル</strong> — ベクトル空間ファンクタ、数ベクトル空間、行列・正方行列</li>
+            <li><strong>有理数</strong> — 基本的な機能、分数体ファンクタ</li>
+            <li><strong>複素数</strong> — 基本的な機能、四元数・八元数・十六元数への拡張（ケーリー・ディクソン代数）</li>
+            <li><strong>ベクトル</strong> — ベクトル空間ファンクタ、数ベクトル空間</li>
             <li><strong>多項式</strong> — 多項式環の実装</li>
-            <li><strong>有限体</strong> — 位数pの有限体、多項式による有限体の構成、K/√2の構成、タワー拡大の限界</li>
+            <li><strong>体の拡大</strong> — 拡大体の定義、多項式による拡大体の構成、K(√2)の構成</li>
           </ul>
         </article>
 
@@ -604,15 +616,10 @@ code {
             <h3>代数を応用する</h3>
             <span class="toc-toggle-icon" aria-hidden="true"></span>
           </button>
-          <p>ここまでつくった部品を組み合わせて、1次方程式から3次方程式までを解きます。方程式に続けて、微分方程式・積分への応用も予定しています。</p>
+          <p>ここまでつくった部品を組み合わせて、2次方程式を解き、微分・積分まで扱います。</p>
           <ul class="toc-sections">
-            <li><strong>多項式方程式</strong> — 数値的に解く・代数的に解くことの違い、「代数的に解く」の3段階、実際のCASの実装方法</li>
-            <li><strong>有理数解を探す</strong> — 有理数根定理による解の絞り込み</li>
-            <li><strong>拡大体K1の構成</strong> — 複数の平方根を同時に添加する拡大体</li>
-            <li><strong>K1(ω)の構成</strong> — 1の原始三乗根の添加</li>
-            <li><strong>三次方程式を解く</strong> — チルンハウス変換、カルダノの公式、還元不能な場合（Casus Irreducibilis）</li>
-            <li><strong>なぜ三次方程式までなのか</strong> — アーベル・ルフィニの定理と、静的な型でどこまで代数を表現できるかという実装上の限界</li>
-            <li><strong>微分方程式・積分（予定）</strong> — 方程式に続く応用範囲として執筆予定</li>
+            <li><strong>二次方程式</strong> — 判別式の平方根の表現、実数の範囲での並列拡大、複素構造ファンクタによる虚数単位の添加、solve関数による求解</li>
+            <li><strong>微分・積分</strong> — 微分の導入、積分のための代数設計、有理関数・指数関数・対数関数の積分、2階線形微分方程式を解く</li>
           </ul>
         </article>
 
@@ -623,7 +630,7 @@ code {
   <section id="read" class="section section-alt">
     <div class="container">
       <h2>本文を読む</h2>
-      <p>方程式の求解までの内容を、PDFでそのまま無料公開しています。会場やオンラインでの頒布を待たずに読めます（微分方程式・積分の章は執筆中のため未収録です）。</p>
+      <p>本文を、PDFでそのまま無料公開しています。会場やオンラインでの頒布を待たずに読めます。</p>
       <div class="pdf-embed">
         <iframe src="algebra.pdf" title="関数型言語OCamlで作る代数計算機 本文PDF"></iframe>
       </div>
@@ -641,23 +648,16 @@ code {
         <div><dt>著者</dt><dd>icchon</dd></div>
         <div><dt>価格</dt><dd>500円（税込）</dd></div>
         <div><dt>形式</dt><dd>紙の本 / PDF</dd></div>
-        <div><dt>ページ数</dt><dd>140ページ（仮）</dd></div>
+        <div><dt>ページ数</dt><dd>140ページ</dd></div>
         <div><dt>言語</dt><dd>日本語</dd></div>
       </dl>
 
-      <h3 class="distribution-subhead">技術書典21</h3>
       <dl class="info-grid">
-        <div><dt>開催</dt><dd>日程未定（後日発表）</dd></div>
-        <div><dt>オンライン公開</dt><dd>2026年10月中旬ごろ予定（URLは後日公開）</dd></div>
+        <div><dt>技術書典21</dt><dd>2026年11月23日</dd></div>
+        <div><dt>こみてっく</dt><dd>2026年10月10日・11日</dd></div>
       </dl>
 
-      <h3 class="distribution-subhead">こみてっく</h3>
-      <dl class="info-grid">
-        <div><dt>概要</dt><dd>東京工業大学の学園祭で開催される同人誌即売会</dd></div>
-        <div><dt>開催</dt><dd>日程未定（後日発表）</dd></div>
-      </dl>
-
-      <p class="note">両イベントとも、詳細な日程・購入ページは決まり次第このページで更新します。</p>
+      <p class="note">各イベントの購入ページ・詳細は決まり次第このページで更新します。</p>
     </div>
   </section>
 
